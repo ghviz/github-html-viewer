@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub HTML Visualizer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    padding: 18px 24px;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  header h1 { font-size: 16px; font-weight: 600; }
+  header span { font-size: 13px; color: #8b949e; }
+  .star-btn {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #21262d;
+    border: 1px solid #30363d;
+    color: #e6edf3;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .2s, border-color .2s;
+  }
+  .star-btn:hover { background: #30363d; border-color: #8b949e; }
+  .star-btn svg { fill: #e3b341; }
+  .input-bar {
+    padding: 16px 24px;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    gap: 10px;
+  }
+  .url-input {
+    flex: 1;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: #e6edf3;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .url-input::placeholder { color: #484f58; }
+  .url-input:focus { border-color: #388bfd; }
+  .btn {
+    background: #238636;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn:hover { background: #2ea043; }
+  .btn:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
+  .status-bar {
+    padding: 6px 24px;
+    font-size: 12px;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-bar.error  { color: #f85149; }
+  .status-bar.success{ color: #3fb950; }
+  .status-bar.loading{ color: #58a6ff; }
+  .spinner {
+    width: 12px; height: 12px;
+    border: 2px solid #30363d;
+    border-top-color: #58a6ff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .api-badge {
+    padding: 4px 24px;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    font-size: 11px;
+    color: #484f58;
+    display: none;
+  }
+  .api-badge a { color: #58a6ff; text-decoration: none; font-family: monospace; font-size: 11px; }
+  .api-badge a:hover { text-decoration: underline; }
+  iframe {
+    flex: 1;
+    border: none;
+    display: none;
+    min-height: calc(100vh - 130px);
+    background: #fff;
+  }
+  .placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: #484f58;
+    background: #0d1117;
+    min-height: calc(100vh - 130px);
+  }
+  .placeholder svg { opacity: .25; }
+  .placeholder p   { font-size: 14px; }
+  .placeholder code {
+    font-size: 12px; background: #161b22;
+    padding: 6px 14px; border-radius: 6px;
+    border: 1px solid #30363d; color: #8b949e; font-family: monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="#e6edf3">
+    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+  </svg>
+  <h1>GitHub HTML Visualizer</h1>
+  <span>— paste any GitHub .html blob URL to preview it live</span>
+  <a class="star-btn" href="https://github.com/ghviz/github-html-viewer" target="_blank">
+    <svg width="15" height="15" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.782 1.4 8.168L12 18.896l-7.334 3.864 1.4-8.168L.132 9.21l8.2-1.192z"/></svg>
+    Star on GitHub
+  </a>
+</header>
+
+<div class="input-bar">
+  <input id="urlInput" class="url-input" type="text"
+    placeholder="https://github.com/user/repo/blob/main/file.html"
+    value="https://github.com/shanraisshan/claude-code-best-practice/blob/main/presentation/index.html"/>
+  <button class="btn" id="loadBtn" onclick="loadPreview()">Render ▶</button>
+</div>
+
+<div class="status-bar" id="statusBar">
+  <div class="spinner" id="spinner"></div>
+  <span id="statusText">Enter a GitHub HTML file URL above and click Render.</span>
+</div>
+
+<div class="api-badge" id="apiBadge">
+  📡 Via GitHub API: <a id="apiLink" href="#" target="_blank"></a>
+</div>
+
+<div class="placeholder" id="placeholder">
+  <svg width="60" height="60" viewBox="0 0 24 24" fill="#e6edf3">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/>
+  </svg>
+  <p>No preview yet</p>
+  <code>github.com/user/repo/blob/branch/file.html</code>
+</div>
+
+<iframe id="previewFrame" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+
+<script>
+  document.getElementById('urlInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadPreview();
+  });
+
+  // Parse a GitHub blob URL → { apiUrl, rawUrl }
+  function parseGitHubUrl(input) {
+    try {
+      const url = new URL(input.trim());
+      if (!url.hostname.includes('github.com')) return null;
+      const m = url.pathname.match(/^\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/);
+      if (!m) return null;
+      const [, owner, repo, branch, path] = m;
+      return {
+        apiUrl: `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`,
+        rawUrl: `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`
+      };
+    } catch { return null; }
+  }
+
+  function setStatus(msg, type = '') {
+    const bar = document.getElementById('statusBar');
+    document.getElementById('statusText').textContent = msg;
+    document.getElementById('spinner').style.display = type === 'loading' ? 'block' : 'none';
+    bar.className = 'status-bar' + (type ? ' ' + type : '');
+  }
+
+  async function loadPreview() {
+    const parsed = parseGitHubUrl(document.getElementById('urlInput').value);
+    const badge  = document.getElementById('apiBadge');
+    const link   = document.getElementById('apiLink');
+    const frame  = document.getElementById('previewFrame');
+    const ph     = document.getElementById('placeholder');
+    const btn    = document.getElementById('loadBtn');
+
+    if (!parsed) {
+      setStatus('⚠ Invalid URL — must be a GitHub blob URL: github.com/user/repo/blob/branch/file.html', 'error');
+      return;
+    }
+
+    // Show API badge
+    badge.style.display = 'block';
+    link.href = link.textContent = parsed.apiUrl;
+
+    btn.disabled = true;
+    setStatus('Fetching via GitHub API…', 'loading');
+    ph.style.display = 'none';
+    frame.style.display = 'none';
+
+    try {
+      const res = await fetch(parsed.apiUrl, {
+        headers: { Accept: 'application/vnd.github.v3+json' }
+      });
+
+      if (res.status === 403) throw new Error('Rate limit hit — try again in a minute, or the repo may be private.');
+      if (res.status === 404) throw new Error('File not found — check the URL.');
+      if (!res.ok) throw new Error(`GitHub API error ${res.status}`);
+
+      const json = await res.json();
+      if (!json.content) throw new Error('No content returned from GitHub API.');
+
+      // GitHub returns base64 with newlines — strip them then decode
+      const html = decodeURIComponent(
+        atob(json.content.replace(/\n/g, ''))
+          .split('')
+          .map(c => '%' + c.charCodeAt(0).toString(16).padStart(2, '0'))
+          .join('')
+      );
+
+      frame.srcdoc = html;
+      frame.style.display = 'block';
+      setStatus(`✓ Rendered successfully — ${(html.length / 1024).toFixed(1)} KB`, 'success');
+    } catch (err) {
+      ph.style.display = 'flex';
+      setStatus(`✗ ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
